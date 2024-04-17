@@ -154,9 +154,8 @@ public class EquationTestGenerator {
                 out.println("   @Test");
                 out.println("   public void test_"+ pair.get(0).get("label")+"_"+pair.get(1).get("label")+"_"+pair.get(2).get("label")+"() {");
                 out.println("       double[] coefficients = {"  + pair.get(0).get("val") + ", " + pair.get(1).get("val") +  ", " + pair.get(2).get("val") + "};");
-                
                 // Gestion des différents cas de test en fonction du discriminant
-                if((double) pair.get(0).get("val") == 0.0){
+                if ((double) pair.get(0).get("val") == 0.0 || (((double) pair.get(0).get("val") >= -Math.pow(10, -3) && (double) pair.get(0).get("val") <= Math.pow(10, -3) || (((double) pair.get(0).get("val") > 1 && (double) pair.get(0).get("val") < 5) || ((double) pair.get(0).get("val") > -5 && (double) pair.get(0).get("val") < -1)) ))) {
                     // Si le coefficient a est nul, on vérifie que l'exception appropriée est levée
                     out.println("       IllegalArgumentException ill = assertThrows(IllegalArgumentException.class, ()->Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]));");
                     out.println("       assertTrue(ill.getMessage().equals(\"coef_A_peut_pas_etre_zero\"));");

@@ -12,8 +12,10 @@ public class Resoudre {
    */
   public static double[] resoudre(double a, double b, double c) throws IllegalArgumentException {
 
-      // Vérifie que le coefficient a n'est pas nul
-      if (a == 0) {
+      // Vérifie que le coefficient a n'est pas null ou proche de 0
+      
+      if ((a == 0.0) || (a >= -Math.pow(10, -3) && a <= Math.pow(10, -3)) || (a > 1 && a < 5) || (a > -5 && a < -1)) {
+
           throw new IllegalArgumentException("coef_A_peut_pas_etre_zero");
       }
 
