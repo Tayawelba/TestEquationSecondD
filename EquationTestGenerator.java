@@ -17,7 +17,7 @@ public class EquationTestGenerator {
                     parts[i] = parts[i].replaceAll("\\d", "");
                     
                 }
-                System.err.println(parts[0] +" "+ parts[1]+" "+ parts[2]);
+                // System.err.println(parts[0] +" "+ parts[1]+" "+ parts[2]);
                 result.add(parts);
             });
         } catch (IOException e) {
@@ -34,7 +34,7 @@ public class EquationTestGenerator {
             double val = 0.0;
             String label = "";
             ArrayList<HashMap<String, Object>> mappedPair = new ArrayList<HashMap<String, Object>>();
-            System.err.println(pair[0]+" "+pair[1]+" "+pair[2] );
+            // System.err.println(pair[0]+" "+pair[1]+" "+pair[2] );
             for (int i = 0; i < pair.length; i++) {
                 String pre;
                 if (i == 0) {
@@ -97,7 +97,8 @@ public class EquationTestGenerator {
 
 
         public void generateTestClass(ArrayList< ArrayList<HashMap<String, Object>>> input) {
-    
+
+            
             try (PrintWriter out = new PrintWriter("EquationSecondDegreTestG.java")) {
                 out.println("import static org.junit.Assert.assertEquals;");
                 out.println("import org.junit.Test;");
@@ -107,40 +108,36 @@ public class EquationTestGenerator {
                 out.println("public class EquationSecondDegreTestG {");
                 out.println("");
     
-                for (ArrayList<HashMap<String, Object>> pair : input) {
+                for (ArrayList<HashMap<String, Object>> pair : input){
+                    double discriminant = (double) pair.get(1).get("val") * (double) pair.get(1).get("val") - 4 * (double) pair.get(0).get("val") * (double) pair.get(2).get("val");
                     out.println("   @Test");
                     out.println("   public void test_"+ pair.get(0).get("label")+"_"+pair.get(1).get("label")+"_"+pair.get(2).get("label")+"() {");
                     out.println("       double[] coefficients = {"  + pair.get(0).get("val") + ", " + pair.get(1).get("val") +  ", " + pair.get(2).get("val") + "};");
-                    double[] coefficients = {(double) pair.get(0).get("val"), (double) pair.get(1).get("val"), (double) pair.get(2).get("val")};
-                    double[] solutions = Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]);
-                    if(pair.get(0).get("val").equals(new Double(0.0))){
-                        out.println("       IllegalArgumentException ill = assertThrows(IllegalArgumentException.class, ()->Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]);");
+                    
+                    if((double) pair.get(0).get("val") == 0.0){
+                        out.println("       IllegalArgumentException ill = assertThrows(IllegalArgumentException.class, ()->Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]));");
                         out.println("       assertTrue(ill.getMessage().equals(\"coef_A_peut_pas_etre_zero\"));");
                     }
-                    else if (solutions != null){
+                    else if(discriminant < 0){
+                        out.println("       IllegalArgumentException ill = assertThrows(IllegalArgumentException.class, ()->Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]));");
+                        out.println("       assertTrue(ill.getMessage().equals(\"pas_equation_solutions_reelles\"));");
+                    }
+                    else if(discriminant > 0) {
                         out.println("       double[] solutions = Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]);");
-                        out.println("       if (solutions.length == 2) {");
-                        out.println("           // Insérez ici vos assertions pour tester les solutions.");
-                        out.println("           double eq1 = coefficients[0] * solutions[0] * solutions[0] + coefficients[1] * solutions[0] + coefficients[2];");
-                        out.println("           double eq2 = coefficients[0] * solutions[1] * solutions[0] + coefficients[1] * solutions[1] + coefficients[2];");
-                        out.println("           // Vérification que les valeurs de l'équation pour les solutions sont proches de 0");
-                        out.println("           assertEquals(eq1, 0, 1e-4);");
-                        out.println("           assertEquals(eq2, 0, 1e-4);");
-                        out.println("       }");
-                        out.println("       else if (solutions.length == 1) {");
-                        out.println("           double eq1 = coefficients[0] * solutions[0] * solutions[0] + coefficients[1] * solutions[0] + coefficients[2];");
-                        out.println("           // Vérification que la valeur de l'équation pour la solution est proche de 0");
-                        out.println("           assertEquals(eq1, 0, 1e-4);");
-                        out.println("       }");
+                        out.println("       // Insérez ici vos assertions pour tester les solutions.");
+                        out.println("       double eq1 = coefficients[0] * solutions[0] * solutions[0] + coefficients[1] * solutions[0] + coefficients[2];");
+                        out.println("       double eq2 = coefficients[0] * solutions[1] * solutions[1] + coefficients[1] * solutions[1] + coefficients[2];");
+                        out.println("       // Vérification que les valeurs de l'équation pour les solutions sont proches de 0");
+                        out.println("       assertEquals(eq1, 0, 1e-4);");
+                        out.println("       assertEquals(eq2, 0, 1e-4);");
                     }
-                    else {
-                        out.println("       IllegalArgumentException ill = assertThrows(IllegalArgumentException.class, ()->Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]);");
-                        out.println("       if (ill.getMessage().equals(\"pas_equation_solutions_reelles\")) {");
-                        out.println("           assertTrue(ill.getMessage().equals(\"pas_equation_solutions_reelles\"));");
-                        out.println("       } else {");
-                        out.println("           fail(\"Exception non attendue : \" + e.getMessage());");
-                        out.println("       }");
+                    else if(discriminant == 0) {
+                        out.println("       double[] solutions = Resoudre.resoudre(coefficients[0], coefficients[1], coefficients[2]);");
+                        out.println("       double eq1 = coefficients[0] * solutions[0] * solutions[0] + coefficients[1] * solutions[0] + coefficients[2];");
+                        out.println("       // Vérification que la valeur de l'équation pour la solution est proche de 0");
+                        out.println("       assertEquals(eq1, 0, 1e-4);");
                     }
+
                 out.println("   }");
                 }
             out.println("}");

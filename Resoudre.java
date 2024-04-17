@@ -15,6 +15,7 @@ public class Resoudre {
       // Vérifie que le coefficient a n'est pas nul
       if (a == 0) {
         throw new IllegalArgumentException("coef_A_peut_pas_etre_zero");
+        // throw new IllegalArgumentException("pas_equation_solutions_reelles");
       }
   
       // Calcule le discriminant (b² - 4ac)
